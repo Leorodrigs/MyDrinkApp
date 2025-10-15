@@ -1,24 +1,29 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
+import { Stack } from "expo-router";
+import "../global.css";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+    <GluestackUIProvider mode="light">
+      <Stack
+        screenOptions={{
+          headerStyle: { backgroundColor: "#6366f1" },
+          headerTintColor: "#fff",
+          headerTitleStyle: { fontWeight: "bold" },
+        }}
+      >
+        <Stack.Screen name="index" options={{ title: "Cocktail App" }} />
+        <Stack.Screen name="drinks/index" options={{ title: "Drinks" }} />
+        <Stack.Screen
+          name="categories/index"
+          options={{ title: "Categorias" }}
+        />
+        <Stack.Screen
+          name="ingredients/index"
+          options={{ title: "Ingredientes" }}
+        />
+        <Stack.Screen name="glasses/index" options={{ title: "Copos" }} />
       </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    </GluestackUIProvider>
   );
 }
