@@ -1,5 +1,6 @@
 import { GRADIENTS } from "@/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router"; // ← Adicione isso
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -70,7 +71,7 @@ export default function IngredientsScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando ingredientes...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -114,7 +115,15 @@ export default function IngredientsScreen() {
               keyExtractor={(item, index) => `${item.strIngredient1}-${index}`}
               contentContainerStyle={{ paddingBottom: 20 }}
               renderItem={({ item }) => (
-                <Pressable className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-4 flex-row items-center">
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/ingredients/[name]",
+                      params: { name: item.strIngredient1 },
+                    })
+                  }
+                  className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-4 flex-row items-center active:opacity-70"
+                >
                   <Image
                     source={{ uri: getIngredientImageUrl(item.strIngredient1) }}
                     className="w-16 h-16 rounded-lg bg-white"

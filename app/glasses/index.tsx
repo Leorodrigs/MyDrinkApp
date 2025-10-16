@@ -1,5 +1,6 @@
 import { GRADIENTS } from "@/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router"; // ← Adicione isso
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -104,7 +105,15 @@ export default function GlassesScreen() {
               keyExtractor={(item) => item.strGlass}
               contentContainerStyle={{ paddingBottom: 20 }}
               renderItem={({ item }) => (
-                <Pressable className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-6">
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/glasses/[name]",
+                      params: { name: item.strGlass },
+                    })
+                  }
+                  className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-6 active:opacity-70"
+                >
                   <Text className="text-xl font-semibold text-gray-800">
                     {item.strGlass}
                   </Text>

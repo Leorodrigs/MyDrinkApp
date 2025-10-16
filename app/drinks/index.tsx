@@ -1,10 +1,12 @@
 import { GRADIENTS } from "@/constants/theme";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router"; // ← Adicione isso
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
+  Pressable, // ← Já tem
   Text,
   TextInput,
   View,
@@ -87,7 +89,6 @@ export default function DrinksScreen() {
   return (
     <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
       <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-        {/* Header com busca */}
         <View className="pb-4">
           <Text className="text-4xl font-bold text-center py-4 text-slate-100">
             Drinks ({filteredDrinks.length})
@@ -104,9 +105,7 @@ export default function DrinksScreen() {
           </View>
         </View>
 
-        {/* Container com margem */}
         <View className="flex-1 px-4">
-          {/* Lista com gradiente suave */}
           <LinearGradient
             {...GRADIENTS.card}
             style={{
@@ -121,7 +120,15 @@ export default function DrinksScreen() {
               keyExtractor={(item) => item.idDrink}
               contentContainerStyle={{ paddingBottom: 20 }}
               renderItem={({ item }) => (
-                <View className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-4 flex-row">
+                <Pressable
+                  onPress={() =>
+                    router.push({
+                      pathname: "/drinks/[id]",
+                      params: { id: item.idDrink },
+                    })
+                  }
+                  className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-4 flex-row active:opacity-70"
+                >
                   <Image
                     source={{ uri: item.strDrinkThumb }}
                     className="w-20 h-20 rounded-lg"
@@ -132,7 +139,7 @@ export default function DrinksScreen() {
                     </Text>
                     <Text className="text-gray-600">{item.strCategory}</Text>
                   </View>
-                </View>
+                </Pressable>
               )}
               ListEmptyComponent={
                 <View className="items-center justify-center p-8">
