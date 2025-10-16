@@ -1,6 +1,7 @@
 import { GRADIENTS } from "@/constants/theme";
+import { drinksService } from "@/services/drinksService";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router"; // ← Adicione isso
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -13,7 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Glass = {
-  strGlass: string;
+  strGlass: string; // Nome do copo (já em português)
 };
 
 export default function GlassesScreen() {
@@ -37,14 +38,18 @@ export default function GlassesScreen() {
     }
   }, [searchQuery, allGlasses]);
 
-  const loadGlasses = async () => {
+  const loadGlasses = () => {
     try {
-      const response = await fetch(
-        "https://www.thecocktaildb.com/api/json/v1/1/list.php?g=list"
-      );
-      const data = await response.json();
-      setAllGlasses(data.drinks || []);
-      setFilteredGlasses(data.drinks || []);
+      // Usa o método do serviço que já retorna copos únicos
+      const uniqueGlasses = drinksService.getGlasses();
+
+      // Mapeia para o formato esperado
+      const glassesArray = uniqueGlasses.map((glass) => ({
+        strGlass: glass,
+      }));
+
+      setAllGlasses(glassesArray);
+      setFilteredGlasses(glassesArray);
     } catch (error) {
       console.error("Erro ao carregar copos:", error);
     } finally {
@@ -61,7 +66,7 @@ export default function GlassesScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Enchendo os copos...
+            Carregando copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -108,7 +113,7 @@ export default function GlassesScreen() {
                 <Pressable
                   onPress={() =>
                     router.push({
-                      pathname: "/glasses/[name]",
+                      pathname: "/glasses/[name]" as any,
                       params: { name: item.strGlass },
                     })
                   }

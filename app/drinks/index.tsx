@@ -1,12 +1,13 @@
 import { GRADIENTS } from "@/constants/theme";
+import { drinksService } from "@/services/drinksService";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router"; // ← Adicione isso
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
-  Pressable, // ← Já tem
+  Pressable,
   Text,
   TextInput,
   View,
@@ -17,7 +18,7 @@ type Drink = {
   idDrink: string;
   strDrink: string;
   strDrinkThumb: string;
-  strCategory?: string;
+  strCategory: string;
 };
 
 export default function DrinksScreen() {
@@ -41,28 +42,21 @@ export default function DrinksScreen() {
     }
   }, [searchQuery, allDrinks]);
 
-  const loadAllDrinks = async () => {
+  const loadAllDrinks = () => {
     try {
-      const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+      // Carrega todos os drinks do JSON local
+      const drinks = drinksService.getAllDrinks();
 
-      const promises = alphabet.map((letter) =>
-        fetch(
-          `https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${letter}`
-        )
-          .then((res) => res.json())
-          .catch(() => ({ drinks: null }))
-      );
+      // Mapeia para o formato esperado
+      const mappedDrinks = drinks.map((drink) => ({
+        idDrink: drink.idDrink,
+        strDrink: drink.strDrink,
+        strDrinkThumb: drink.strDrinkThumb,
+        strCategory: drink.strCategory,
+      }));
 
-      const results = await Promise.all(promises);
-      const allDrinksData = results.flatMap((data) => data.drinks || []);
-
-      const uniqueDrinks = allDrinksData.filter(
-        (drink, index, self) =>
-          index === self.findIndex((d) => d.idDrink === drink.idDrink)
-      );
-
-      setAllDrinks(uniqueDrinks);
-      setFilteredDrinks(uniqueDrinks);
+      setAllDrinks(mappedDrinks);
+      setFilteredDrinks(mappedDrinks);
     } catch (error) {
       console.error("Erro ao carregar drinks:", error);
     } finally {
@@ -79,7 +73,7 @@ export default function DrinksScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Enchendo os copos...
+            Carregando drinks...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -123,7 +117,7 @@ export default function DrinksScreen() {
                 <Pressable
                   onPress={() =>
                     router.push({
-                      pathname: "/drinks/[id]",
+                      pathname: "/drinks/[id]" as any,
                       params: { id: item.idDrink },
                     })
                   }

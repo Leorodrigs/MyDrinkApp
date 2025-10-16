@@ -1,6 +1,7 @@
 import { GRADIENTS } from "@/constants/theme";
+import { drinksService } from "@/services/drinksService";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router"; // ← Adicione isso
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -12,7 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Category = {
-  strCategory: string;
+  strCategory: string; // Nome da categoria (já em português)
 };
 
 export default function CategoriesScreen() {
@@ -23,13 +24,17 @@ export default function CategoriesScreen() {
     loadCategories();
   }, []);
 
-  const loadCategories = async () => {
+  const loadCategories = () => {
     try {
-      const response = await fetch(
-        "https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list"
-      );
-      const data = await response.json();
-      setCategories(data.drinks || []);
+      // Pega todas as categorias únicas do JSON local
+      const uniqueCategories = drinksService.getCategories();
+
+      // Mapeia para o formato esperado
+      const categoriesArray = uniqueCategories.map((category) => ({
+        strCategory: category,
+      }));
+
+      setCategories(categoriesArray);
     } catch (error) {
       console.error("Erro ao carregar categorias:", error);
     } finally {
@@ -46,7 +51,7 @@ export default function CategoriesScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Enchendo os copos...
+            Carregando categorias...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -59,7 +64,7 @@ export default function CategoriesScreen() {
         {/* Header */}
         <View className="pb-4">
           <Text className="text-4xl font-bold text-center py-4 text-slate-100">
-            Categorias
+            Categorias ({categories.length})
           </Text>
         </View>
 
@@ -83,7 +88,7 @@ export default function CategoriesScreen() {
                 <Pressable
                   onPress={() =>
                     router.push({
-                      pathname: "/categories/[name]",
+                      pathname: "/categories/[name]" as any,
                       params: { name: item.strCategory },
                     })
                   }

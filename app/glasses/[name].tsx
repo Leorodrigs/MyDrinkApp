@@ -1,4 +1,5 @@
 import { GRADIENTS } from "@/constants/theme";
+import { drinksService } from "@/services/drinksService";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -27,13 +28,19 @@ export default function GlassDrinksScreen() {
     loadDrinksByGlass();
   }, [name]);
 
-  const loadDrinksByGlass = async () => {
+  const loadDrinksByGlass = () => {
     try {
-      const response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/filter.php?g=${name}`
-      );
-      const data = await response.json();
-      setDrinks(data.drinks || []);
+      // Usa o JSON local ao invés da API
+      const filteredDrinks = drinksService.getDrinksByGlass(name || "");
+
+      // Mapeia para o formato esperado
+      const mappedDrinks = filteredDrinks.map((drink) => ({
+        idDrink: drink.idDrink,
+        strDrink: drink.strDrink,
+        strDrinkThumb: drink.strDrinkThumb,
+      }));
+
+      setDrinks(mappedDrinks);
     } catch (error) {
       console.error("Erro ao carregar drinks do copo:", error);
     } finally {
@@ -50,7 +57,7 @@ export default function GlassDrinksScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Enchendo os copos...
+            Carregando drinks...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -71,6 +78,7 @@ export default function GlassDrinksScreen() {
           <View className="pb-4">
             <View className="items-center py-4">
               {/* Ícone de copo (emoji) */}
+              <Text className="text-7xl mb-2">🥃</Text>
 
               <Text className="text-3xl font-bold text-center text-slate-100">
                 {name}
@@ -101,7 +109,7 @@ export default function GlassDrinksScreen() {
                   <Pressable
                     onPress={() =>
                       router.push({
-                        pathname: "/drinks/[id]",
+                        pathname: "/drinks/[id]" as any,
                         params: { id: item.idDrink },
                       })
                     }

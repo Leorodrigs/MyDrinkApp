@@ -1,6 +1,7 @@
 import { GRADIENTS } from "@/constants/theme";
+import { drinksService } from "@/services/drinksService";
 import { LinearGradient } from "expo-linear-gradient";
-import { router } from "expo-router"; // ← Adicione isso
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,7 +15,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Ingredient = {
-  strIngredient1: string;
+  name: string; // Nome do ingrediente (já em português)
 };
 
 export default function IngredientsScreen() {
@@ -34,22 +35,24 @@ export default function IngredientsScreen() {
       setFilteredIngredients(allIngredients);
     } else {
       const filtered = allIngredients.filter((ingredient) =>
-        ingredient.strIngredient1
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
+        ingredient.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredIngredients(filtered);
     }
   }, [searchQuery, allIngredients]);
 
-  const loadIngredients = async () => {
+  const loadIngredients = () => {
     try {
-      const response = await fetch(
-        "https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list"
-      );
-      const data = await response.json();
-      setAllIngredients(data.drinks || []);
-      setFilteredIngredients(data.drinks || []);
+      // Usa o método do serviço que já retorna ingredientes únicos
+      const uniqueIngredients = drinksService.getIngredients();
+
+      // Mapeia para o formato esperado
+      const ingredientsArray = uniqueIngredients.map((ingredient) => ({
+        name: ingredient,
+      }));
+
+      setAllIngredients(ingredientsArray);
+      setFilteredIngredients(ingredientsArray);
     } catch (error) {
       console.error("Erro ao carregar ingredientes:", error);
     } finally {
@@ -57,8 +60,9 @@ export default function IngredientsScreen() {
     }
   };
 
-  // Função para gerar URL da imagem do ingrediente
   const getIngredientImageUrl = (ingredientName: string) => {
+    // Como os ingredientes estão em português, podemos usar direto
+    // A API pode não ter todas as imagens, mas vale tentar
     return `https://www.thecocktaildb.com/images/ingredients/${ingredientName}-Small.png`;
   };
 
@@ -71,7 +75,7 @@ export default function IngredientsScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Enchendo os copos...
+            Carregando ingredientes...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -81,7 +85,6 @@ export default function IngredientsScreen() {
   return (
     <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
       <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-        {/* Header com busca */}
         <View className="pb-4">
           <Text className="text-4xl font-bold text-center py-4 text-slate-100">
             Ingredientes ({filteredIngredients.length})
@@ -98,9 +101,7 @@ export default function IngredientsScreen() {
           </View>
         </View>
 
-        {/* Container com margem */}
         <View className="flex-1 px-4">
-          {/* Lista com gradiente suave */}
           <LinearGradient
             {...GRADIENTS.card}
             style={{
@@ -112,26 +113,26 @@ export default function IngredientsScreen() {
           >
             <FlatList
               data={filteredIngredients}
-              keyExtractor={(item, index) => `${item.strIngredient1}-${index}`}
+              keyExtractor={(item, index) => `${item.name}-${index}`}
               contentContainerStyle={{ paddingBottom: 20 }}
               renderItem={({ item }) => (
                 <Pressable
                   onPress={() =>
                     router.push({
-                      pathname: "/ingredients/[name]",
-                      params: { name: item.strIngredient1 },
+                      pathname: "/ingredients/[name]" as any,
+                      params: { name: item.name },
                     })
                   }
                   className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-4 flex-row items-center active:opacity-70"
                 >
                   <Image
-                    source={{ uri: getIngredientImageUrl(item.strIngredient1) }}
+                    source={{ uri: getIngredientImageUrl(item.name) }}
                     className="w-16 h-16 rounded-lg bg-white"
                     resizeMode="contain"
                   />
                   <View className="ml-4 flex-1">
                     <Text className="text-xl font-semibold text-gray-800">
-                      {item.strIngredient1}
+                      {item.name}
                     </Text>
                   </View>
                 </Pressable>

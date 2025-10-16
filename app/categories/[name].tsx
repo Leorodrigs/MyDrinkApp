@@ -1,4 +1,5 @@
 import { GRADIENTS } from "@/constants/theme";
+import { drinksService } from "@/services/drinksService";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -27,13 +28,19 @@ export default function CategoryDrinksScreen() {
     loadDrinksByCategory();
   }, [name]);
 
-  const loadDrinksByCategory = async () => {
+  const loadDrinksByCategory = () => {
     try {
-      const response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${name}`
-      );
-      const data = await response.json();
-      setDrinks(data.drinks || []);
+      // Usa o JSON local com a categoria em português
+      const filteredDrinks = drinksService.getDrinksByCategory(name || "");
+
+      // Mapeia para o formato esperado
+      const mappedDrinks = filteredDrinks.map((drink) => ({
+        idDrink: drink.idDrink,
+        strDrink: drink.strDrink,
+        strDrinkThumb: drink.strDrinkThumb,
+      }));
+
+      setDrinks(mappedDrinks);
     } catch (error) {
       console.error("Erro ao carregar drinks da categoria:", error);
     } finally {
@@ -50,7 +57,7 @@ export default function CategoryDrinksScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Enchendo os copos...
+            Carregando drinks...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -97,7 +104,7 @@ export default function CategoryDrinksScreen() {
                   <Pressable
                     onPress={() =>
                       router.push({
-                        pathname: "/drinks/[id]",
+                        pathname: "/drinks/[id]" as any,
                         params: { id: item.idDrink },
                       })
                     }

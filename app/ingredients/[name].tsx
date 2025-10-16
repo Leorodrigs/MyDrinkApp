@@ -1,4 +1,5 @@
 import { GRADIENTS } from "@/constants/theme";
+import { drinksService } from "@/services/drinksService";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -27,13 +28,19 @@ export default function IngredientDrinksScreen() {
     loadDrinksByIngredient();
   }, [name]);
 
-  const loadDrinksByIngredient = async () => {
+  const loadDrinksByIngredient = () => {
     try {
-      const response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${name}`
-      );
-      const data = await response.json();
-      setDrinks(data.drinks || []);
+      // Usa o JSON local ao invés da API
+      const filteredDrinks = drinksService.getDrinksByIngredient(name || "");
+
+      // Mapeia para o formato esperado
+      const mappedDrinks = filteredDrinks.map((drink) => ({
+        idDrink: drink.idDrink,
+        strDrink: drink.strDrink,
+        strDrinkThumb: drink.strDrinkThumb,
+      }));
+
+      setDrinks(mappedDrinks);
     } catch (error) {
       console.error("Erro ao carregar drinks do ingrediente:", error);
     } finally {
@@ -55,7 +62,7 @@ export default function IngredientDrinksScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Enchendo os copos...
+            Carregando drinks...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -74,6 +81,13 @@ export default function IngredientDrinksScreen() {
         <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
           {/* Header com imagem do ingrediente */}
           <View className="pb-4 items-center">
+            <View className="w-32 h-32 bg-white rounded-full items-center justify-center mt-4 mb-2">
+              <Image
+                source={{ uri: getIngredientImageUrl(name || "") }}
+                className="w-28 h-28"
+                resizeMode="contain"
+              />
+            </View>
             <Text className="text-3xl font-bold text-center text-slate-100">
               {name}
             </Text>
@@ -102,7 +116,7 @@ export default function IngredientDrinksScreen() {
                   <Pressable
                     onPress={() =>
                       router.push({
-                        pathname: "/drinks/[id]",
+                        pathname: "/drinks/[id]" as any,
                         params: { id: item.idDrink },
                       })
                     }
