@@ -17,7 +17,6 @@ export default function DrinkDetailScreen() {
 
   const loadDrinkDetails = () => {
     try {
-      // Busca o drink no JSON local pelo ID (versão simplificada)
       const foundDrink = drinksService.getDrinkByIdSimplified(id || "");
       setDrink(foundDrink || null);
     } catch (error) {
@@ -36,7 +35,7 @@ export default function DrinkDetailScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando drink...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -66,14 +65,12 @@ export default function DrinkDetailScreen() {
 
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
         <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-          {/* Header fixo com nome do drink */}
           <View className="pb-4">
             <Text className="text-4xl font-bold text-center py-4 text-slate-100">
               {drink.strDrink}
             </Text>
           </View>
 
-          {/* Conteúdo scrollável */}
           <View className="flex-1 px-4">
             <LinearGradient
               {...GRADIENTS.card}
@@ -88,7 +85,6 @@ export default function DrinkDetailScreen() {
                 contentContainerStyle={{ paddingBottom: 40 }}
                 showsVerticalScrollIndicator={false}
               >
-                {/* Imagem do drink */}
                 <View className="items-center pt-6 pb-4">
                   <Image
                     source={{ uri: drink.strDrinkThumb }}
@@ -109,7 +105,6 @@ export default function DrinkDetailScreen() {
                   </View>
                 </View>
 
-                {/* Ingredientes */}
                 <View className="px-6 mt-4">
                   <Text className="text-2xl font-bold text-gray-800 mb-4">
                     Ingredientes
@@ -131,7 +126,6 @@ export default function DrinkDetailScreen() {
                   </View>
                 </View>
 
-                {/* Instruções */}
                 <View className="px-6 mt-6">
                   <Text className="text-2xl font-bold text-gray-800 mb-4">
                     Instruções

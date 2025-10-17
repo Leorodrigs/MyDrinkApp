@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  Image,
   Pressable,
   Text,
   TextInput,
@@ -15,7 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Ingredient = {
-  name: string; // Nome do ingrediente (já em português)
+  name: string;
 };
 
 export default function IngredientsScreen() {
@@ -43,10 +42,8 @@ export default function IngredientsScreen() {
 
   const loadIngredients = () => {
     try {
-      // Usa o método do serviço que já retorna ingredientes únicos
       const uniqueIngredients = drinksService.getIngredients();
 
-      // Mapeia para o formato esperado
       const ingredientsArray = uniqueIngredients.map((ingredient) => ({
         name: ingredient,
       }));
@@ -60,12 +57,6 @@ export default function IngredientsScreen() {
     }
   };
 
-  const getIngredientImageUrl = (ingredientName: string) => {
-    // Como os ingredientes estão em português, podemos usar direto
-    // A API pode não ter todas as imagens, mas vale tentar
-    return `https://www.thecocktaildb.com/images/ingredients/${ingredientName}-Small.png`;
-  };
-
   if (loading) {
     return (
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
@@ -75,7 +66,7 @@ export default function IngredientsScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando ingredientes...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -125,12 +116,7 @@ export default function IngredientsScreen() {
                   }
                   className="bg-slate-50 border border-slate-200 mx-4 mt-4 rounded-xl p-4 flex-row items-center active:opacity-70"
                 >
-                  <Image
-                    source={{ uri: getIngredientImageUrl(item.name) }}
-                    className="w-16 h-16 rounded-lg bg-white"
-                    resizeMode="contain"
-                  />
-                  <View className="ml-4 flex-1">
+                  <View className="flex-1">
                     <Text className="text-xl font-semibold text-gray-800">
                       {item.name}
                     </Text>

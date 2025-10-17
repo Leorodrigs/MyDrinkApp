@@ -44,10 +44,8 @@ export default function DrinksScreen() {
 
   const loadAllDrinks = () => {
     try {
-      // Carrega todos os drinks do JSON local
       const drinks = drinksService.getAllDrinks();
 
-      // Mapeia para o formato esperado
       const mappedDrinks = drinks.map((drink) => ({
         idDrink: drink.idDrink,
         strDrink: drink.strDrink,
@@ -73,7 +71,7 @@ export default function DrinksScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando drinks...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>

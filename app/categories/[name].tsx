@@ -30,10 +30,15 @@ export default function CategoryDrinksScreen() {
 
   const loadDrinksByCategory = () => {
     try {
-      // Usa o JSON local com a categoria em português
-      const filteredDrinks = drinksService.getDrinksByCategory(name || "");
+      const allDrinks = drinksService.getAllDrinks();
 
-      // Mapeia para o formato esperado
+      const filteredDrinks = allDrinks.filter((drink) => {
+        const categories = drink.strCategory
+          .split(",")
+          .map((cat) => cat.trim());
+        return categories.includes(name || "");
+      });
+
       const mappedDrinks = filteredDrinks.map((drink) => ({
         idDrink: drink.idDrink,
         strDrink: drink.strDrink,
@@ -74,7 +79,6 @@ export default function CategoryDrinksScreen() {
 
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
         <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-          {/* Header com nome da categoria */}
           <View className="pb-4">
             <Text className="text-4xl font-bold text-center py-4 text-slate-100">
               {name}
@@ -84,9 +88,7 @@ export default function CategoryDrinksScreen() {
             </Text>
           </View>
 
-          {/* Container com margem */}
           <View className="flex-1 px-4">
-            {/* Lista com gradiente suave */}
             <LinearGradient
               {...GRADIENTS.card}
               style={{

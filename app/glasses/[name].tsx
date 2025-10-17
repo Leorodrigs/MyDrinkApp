@@ -30,10 +30,8 @@ export default function GlassDrinksScreen() {
 
   const loadDrinksByGlass = () => {
     try {
-      // Usa o JSON local ao invés da API
       const filteredDrinks = drinksService.getDrinksByGlass(name || "");
 
-      // Mapeia para o formato esperado
       const mappedDrinks = filteredDrinks.map((drink) => ({
         idDrink: drink.idDrink,
         strDrink: drink.strDrink,
@@ -57,7 +55,7 @@ export default function GlassDrinksScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando drinks...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -74,12 +72,8 @@ export default function GlassDrinksScreen() {
 
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
         <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-          {/* Header com nome do copo */}
           <View className="pb-4">
             <View className="items-center py-4">
-              {/* Ícone de copo (emoji) */}
-              <Text className="text-7xl mb-2">🥃</Text>
-
               <Text className="text-3xl font-bold text-center text-slate-100">
                 {name}
               </Text>

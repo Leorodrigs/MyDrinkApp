@@ -8,13 +8,12 @@ import {
   FlatList,
   Pressable,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Glass = {
-  strGlass: string; // Nome do copo (já em português)
+  strGlass: string;
 };
 
 export default function GlassesScreen() {
@@ -40,10 +39,8 @@ export default function GlassesScreen() {
 
   const loadGlasses = () => {
     try {
-      // Usa o método do serviço que já retorna copos únicos
       const uniqueGlasses = drinksService.getGlasses();
 
-      // Mapeia para o formato esperado
       const glassesArray = uniqueGlasses.map((glass) => ({
         strGlass: glass,
       }));
@@ -66,7 +63,7 @@ export default function GlassesScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando copos...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -76,26 +73,13 @@ export default function GlassesScreen() {
   return (
     <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
       <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-        {/* Header com busca */}
         <View className="pb-4">
           <Text className="text-4xl font-bold text-center py-4 text-slate-100">
-            Copos ({filteredGlasses.length})
+            Copos
           </Text>
-
-          <View className="mx-4">
-            <TextInput
-              className="bg-slate-100 rounded-lg px-4 py-3 text-base"
-              placeholder="Buscar copo..."
-              placeholderTextColor="#9ca3af"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
         </View>
 
-        {/* Container com margem */}
         <View className="flex-1 px-4">
-          {/* Lista com gradiente suave */}
           <LinearGradient
             {...GRADIENTS.card}
             style={{

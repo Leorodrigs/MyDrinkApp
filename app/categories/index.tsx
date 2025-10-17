@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type Category = {
-  strCategory: string; // Nome da categoria (já em português)
+  strCategory: string;
 };
 
 export default function CategoriesScreen() {
@@ -26,10 +26,8 @@ export default function CategoriesScreen() {
 
   const loadCategories = () => {
     try {
-      // Pega todas as categorias únicas do JSON local
       const uniqueCategories = drinksService.getCategories();
 
-      // Mapeia para o formato esperado
       const categoriesArray = uniqueCategories.map((category) => ({
         strCategory: category,
       }));
@@ -51,7 +49,7 @@ export default function CategoriesScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando categorias...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -61,16 +59,13 @@ export default function CategoriesScreen() {
   return (
     <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
       <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-        {/* Header */}
         <View className="pb-4">
           <Text className="text-4xl font-bold text-center py-4 text-slate-100">
             Categorias ({categories.length})
           </Text>
         </View>
 
-        {/* Container com margem */}
         <View className="flex-1 px-4">
-          {/* Lista com gradiente suave */}
           <LinearGradient
             {...GRADIENTS.card}
             style={{

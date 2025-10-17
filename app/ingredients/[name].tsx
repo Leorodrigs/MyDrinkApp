@@ -30,10 +30,8 @@ export default function IngredientDrinksScreen() {
 
   const loadDrinksByIngredient = () => {
     try {
-      // Usa o JSON local ao invés da API
       const filteredDrinks = drinksService.getDrinksByIngredient(name || "");
 
-      // Mapeia para o formato esperado
       const mappedDrinks = filteredDrinks.map((drink) => ({
         idDrink: drink.idDrink,
         strDrink: drink.strDrink,
@@ -48,11 +46,6 @@ export default function IngredientDrinksScreen() {
     }
   };
 
-  // Função para gerar URL da imagem do ingrediente
-  const getIngredientImageUrl = (ingredientName: string) => {
-    return `https://www.thecocktaildb.com/images/ingredients/${ingredientName}-Medium.png`;
-  };
-
   if (loading) {
     return (
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
@@ -62,7 +55,7 @@ export default function IngredientDrinksScreen() {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text className="text-white mt-4 font-bold text-lg">
-            Carregando drinks...
+            Enchendo os copos...
           </Text>
         </LinearGradient>
       </SafeAreaView>
@@ -79,15 +72,7 @@ export default function IngredientDrinksScreen() {
 
       <SafeAreaView className="flex-1" edges={["top", "bottom"]}>
         <LinearGradient {...GRADIENTS.primary} style={{ flex: 1 }}>
-          {/* Header com imagem do ingrediente */}
           <View className="pb-4 items-center">
-            <View className="w-32 h-32 bg-white rounded-full items-center justify-center mt-4 mb-2">
-              <Image
-                source={{ uri: getIngredientImageUrl(name || "") }}
-                className="w-28 h-28"
-                resizeMode="contain"
-              />
-            </View>
             <Text className="text-3xl font-bold text-center text-slate-100">
               {name}
             </Text>
@@ -96,9 +81,7 @@ export default function IngredientDrinksScreen() {
             </Text>
           </View>
 
-          {/* Container com margem */}
           <View className="flex-1 px-4">
-            {/* Lista com gradiente suave */}
             <LinearGradient
               {...GRADIENTS.card}
               style={{

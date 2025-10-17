@@ -40,7 +40,6 @@ export type DrinkBR = {
   strMeasure15?: string | null;
 };
 
-// Tipo simplificado para uso nas telas
 export type DrinkSimplified = {
   idDrink: string;
   strDrink: string;
@@ -58,17 +57,14 @@ export type DrinkSimplified = {
 class DrinksService {
   private drinks: DrinkBR[] = drinksData as DrinkBR[];
 
-  // Buscar todos os drinks
   getAllDrinks(): DrinkBR[] {
     return this.drinks;
   }
 
-  // Buscar drink por ID
   getDrinkById(id: string): DrinkBR | undefined {
     return this.drinks.find((drink) => drink.idDrink === id);
   }
 
-  // Buscar drink por ID (versão simplificada)
   getDrinkByIdSimplified(id: string): DrinkSimplified | undefined {
     const drink = this.getDrinkById(id);
     if (!drink) return undefined;
@@ -85,7 +81,6 @@ class DrinksService {
     };
   }
 
-  // Extrair ingredientes de um drink
   private getIngredientsFromDrink(
     drink: DrinkBR
   ): Array<{ name: string; measure: string }> {
@@ -109,7 +104,6 @@ class DrinksService {
     return ingredients;
   }
 
-  // Buscar drinks por nome
   searchDrinks(query: string): DrinkBR[] {
     const lowerQuery = query.toLowerCase();
     return this.drinks.filter((drink) =>
@@ -117,14 +111,15 @@ class DrinksService {
     );
   }
 
-  // Buscar drinks por categoria
   getDrinksByCategory(category: string): DrinkBR[] {
-    return this.drinks.filter(
-      (drink) => drink.strCategory.toLowerCase() === category.toLowerCase()
-    );
+    return this.drinks.filter((drink) => {
+      const categories = drink.strCategory.split(",").map((cat) => cat.trim());
+      return categories.some(
+        (cat) => cat.toLowerCase() === category.toLowerCase()
+      );
+    });
   }
 
-  // Buscar drinks por ingrediente
   getDrinksByIngredient(ingredientName: string): DrinkBR[] {
     const lowerIngredient = ingredientName.toLowerCase();
 
@@ -144,20 +139,27 @@ class DrinksService {
     });
   }
 
-  // Buscar drinks por copo
   getDrinksByGlass(glassName: string): DrinkBR[] {
     return this.drinks.filter(
       (drink) => drink.strGlass.toLowerCase() === glassName.toLowerCase()
     );
   }
 
-  // Obter todas as categorias únicas
   getCategories(): string[] {
-    const categories = new Set(this.drinks.map((d) => d.strCategory));
-    return Array.from(categories).sort();
+    const categoriesSet = new Set<string>();
+
+    this.drinks.forEach((drink) => {
+      const categories = drink.strCategory.split(",").map((cat) => cat.trim());
+      categories.forEach((category) => {
+        if (category) {
+          categoriesSet.add(category);
+        }
+      });
+    });
+
+    return Array.from(categoriesSet).sort();
   }
 
-  // Obter todos os ingredientes únicos
   getIngredients(): string[] {
     const ingredients = new Set<string>();
 
@@ -175,13 +177,11 @@ class DrinksService {
     return Array.from(ingredients).sort();
   }
 
-  // Obter todos os copos únicos
   getGlasses(): string[] {
     const glasses = new Set(this.drinks.map((d) => d.strGlass));
     return Array.from(glasses).sort();
   }
 
-  // Buscar drinks alcoólicos ou não alcoólicos
   getDrinksByAlcoholic(isAlcoholic: boolean): DrinkBR[] {
     const searchTerm = isAlcoholic ? "Alcoólico" : "Não Alcoólico";
     return this.drinks.filter((drink) => drink.strAlcoholic === searchTerm);
